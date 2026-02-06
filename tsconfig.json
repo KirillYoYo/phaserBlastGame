@@ -19,6 +19,6 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "include": ["src/**/*", "vite-env.d.ts"],
+  "include": ["src/**/*", "vite-env.d.ts", "log.ts"],
   "exclude": ["node_modules", "dist"]
 }

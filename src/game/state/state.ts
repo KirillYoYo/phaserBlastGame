@@ -1,7 +1,7 @@
-import { Tile } from '../entities/Tile';
+import { Tile } from '../entities/Tile'
 
 export interface GameState {
-    grid: (Tile | null)[][];
-    score: number;
-    nextTileId: number;
+    grid: (Tile | null)[][]
+    score: number
+    nextTileId: number
 }

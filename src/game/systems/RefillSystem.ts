@@ -1,11 +1,11 @@
-import { GameState } from '../state/state';
-import { TileColor } from '../entities/Tile';
+import { GameState } from '../state/state'
+import { TileColor } from '../entities/Tile'
 
-const COLORS: TileColor[] = ['red', 'green', 'blue', 'yellow'];
+const COLORS: TileColor[] = ['red', 'green', 'blue', 'yellow']
 
 export function refill(state: GameState): GameState {
-    const grid = state.grid.map(row => row.slice());
-    let nextId = state.nextTileId;
+    const grid = state.grid.map(row => row.slice())
+    let nextId = state.nextTileId
 
     for (let y = 0; y < grid.length; y++) {
         for (let x = 0; x < grid[y].length; x++) {
@@ -14,11 +14,11 @@ export function refill(state: GameState): GameState {
                     id: nextId++,
                     x,
                     y,
-                    color: COLORS[Math.floor(Math.random() * COLORS.length)]
-                };
+                    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                }
             }
         }
     }
 
-    return { ...state, grid, nextTileId: nextId };
+    return { ...state, grid, nextTileId: nextId }
 }

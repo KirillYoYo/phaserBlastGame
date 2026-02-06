@@ -1,8 +1,9 @@
-import { Boot } from './scenes/Boot';
-import { GameScene as MainGame } from './scenes/GameScene';
-import { GameOver } from './scenes/GameOver.js';
-import { Preloader } from './scenes/Preloader.js';
-import { AUTO, Game } from 'phaser';
+import { AUTO, Game } from 'phaser'
+
+import { Boot } from './scenes/Boot'
+import { GameScene as MainGame } from './scenes/GameScene'
+import { GameOver } from './scenes/GameOver.js'
+import { Preloader } from './scenes/Preloader.js'
 
 const config = {
     type: AUTO,
@@ -13,19 +14,13 @@ const config = {
     scale: {
         /* mode: Phaser.Scale.RESIZE, */
         mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH
+        autoCenter: Phaser.Scale.CENTER_BOTH,
     },
-    scene: [
-        Boot,
-        Preloader,
-        MainGame,
-        GameOver
-    ]
-};
-
-const StartGame = (parent: string | HTMLElement) => {
-    return new Game({ ...config, parent });
-
+    scene: [Boot, Preloader, MainGame, GameOver],
 }
 
-export default StartGame;
+const StartGame = (parent: string | HTMLElement) => {
+    return new Game({ ...config, parent })
+}
+
+export default StartGame
