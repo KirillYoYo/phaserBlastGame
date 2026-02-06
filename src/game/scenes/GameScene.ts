@@ -20,6 +20,8 @@ export class GameScene extends Phaser.Scene {
         this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
             const x = Math.floor(p.x / 64)
             const y = Math.floor(p.y / 64)
+            console.log('px', p.x)
+            console.log('py', p.y)
 
             this.state = handleTileClick(this.state, x, y)
             this.state = applyGravity(this.state)
@@ -44,5 +46,7 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
-    // update(time: number, delta: number) {}
+    // update(time: number, delta: number) {
+    //
+    // }
 }

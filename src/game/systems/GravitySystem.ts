@@ -1,21 +1,21 @@
+import { produce } from 'immer'
+
 import { GameState } from '../state/state'
 
 export function applyGravity(state: GameState): GameState {
-    const grid = state.grid.map(row => row.slice())
+    return produce(state, draft => {
+        for (let x = 0; x < draft.grid[0].length; x++) {
+            let writeY = draft.grid.length - 1
 
-    for (let x = 0; x < grid[0].length; x++) {
-        let writeY = grid.length - 1
-
-        for (let y = grid.length - 1; y >= 0; y--) {
-            if (grid[y][x]) {
-                const tile = grid[y][x]!
-                grid[y][x] = null
-                tile.y = writeY
-                grid[writeY][x] = tile
-                writeY--
+            for (let y = draft.grid.length - 1; y >= 0; y--) {
+                if (draft.grid[y][x]) {
+                    const tile = draft.grid[y][x]!
+                    draft.grid[y][x] = null
+                    tile.y = writeY
+                    draft.grid[writeY][x] = tile
+                    writeY--
+                }
             }
         }
-    }
-
-    return { ...state, grid }
+    })
 }

@@ -62,6 +62,11 @@ export default tseslint.config(
                 typescript: createTypeScriptImportResolver({
                     project: './tsconfig.json',
                 }),
+                node: {
+                    extensions: ['.ts', '.tsx', '.js', '.jsx', '.mjs'],
+                    // разрешаем все node_modules
+                    moduleDirectory: ['node_modules', 'src'],
+                },
             },
         },
         rules: {

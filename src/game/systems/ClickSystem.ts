@@ -1,20 +1,17 @@
+import { produce } from 'immer'
+
 import { GameState } from '../state/state'
 
 import { findConnectedTiles } from './MatchSystem'
 
-export function handleTileClick(state: GameState, x: number, y: number): GameState {
-    const group = findConnectedTiles(state.grid, x, y)
-    if (group.length < 2) return state
+export function handleTileClick(state: GameState, x: number, y: number) {
+    return produce(state, draft => {
+        const group = findConnectedTiles(draft.grid, x, y)
+        if (group.length < 2) return
 
-    const newGrid = state.grid.map(row => row.slice())
-
-    for (const tile of group) {
-        newGrid[tile.y][tile.x] = null
-    }
-
-    return {
-        ...state,
-        grid: newGrid,
-        score: state.score + group.length * 10,
-    }
+        for (const tile of group) {
+            draft.grid[tile.y][tile.x] = null
+        }
+        draft.score += group.length * 10
+    })
 }
