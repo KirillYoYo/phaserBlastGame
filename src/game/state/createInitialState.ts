@@ -1,4 +1,4 @@
-import { TileColor } from '../entities/Tile'
+import { Tile, TileColor } from '../entities/Tile'
 
 import { GameState } from './state'
 
@@ -7,18 +7,26 @@ const COLORS: TileColor[] = ['red', 'green', 'blue', 'yellow']
 export function createInitialState(cols: number, rows: number): GameState {
     let id = 0
 
+    const tilesById = new Map<number, Tile>()
+
     const grid = Array.from({ length: rows }, (_, y) =>
-        Array.from({ length: cols }, (_, x) => ({
-            id: id++,
-            x,
-            y,
-            color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        }))
+        Array.from({ length: cols }, (_, x) => {
+            const newTile = {
+                id: id++,
+                x,
+                y,
+                color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            }
+            tilesById.set(newTile.id, newTile)
+            return newTile
+        })
     )
 
     return {
         grid,
         score: 0,
         nextTileId: id,
+        tilesById: tilesById,
+        deletedTiles: [],
     }
 }

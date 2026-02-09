@@ -1,9 +1,12 @@
 import { AUTO, Game } from 'phaser'
+import { enableMapSet } from 'immer'
 
 import { Boot } from './scenes/Boot'
 import { GameScene as MainGame } from './scenes/GameScene'
 import { GameOver } from './scenes/GameOver.js'
 import { Preloader } from './scenes/Preloader.js'
+
+enableMapSet()
 
 const config = {
     type: AUTO,
