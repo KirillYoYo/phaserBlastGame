@@ -1,63 +1,46 @@
-import { createInitialState } from '../state/createInitialState'
-import { handleTileClick } from '../systems/ClickSystem'
-import { TileView, TileViewFactory } from '../views/TileView'
-import { applyGravity } from '../systems/GravitySystem'
-import { refill } from '../systems/RefillSystem'
-import { GameState } from '../state/state'
+import { GameState } from '@/game/state/state'
+import { TilesBoard } from '@/game/components/TilesBoard'
+import { LayoutManager } from '@/game/components/LayoutManager'
 
 export class GameScene extends Phaser.Scene {
+    layout: LayoutManager
+    tilesBoard: TilesBoard | null
     state!: GameState
-    views = new Map<number, TileView>()
-    factory: TileViewFactory
 
     constructor() {
         super('GameScene')
-        this.tileClickHandler = this.tileClickHandler.bind(this)
-        this.factory = new TileViewFactory(this)
+        this.tilesBoard = null
+        this.layout = new LayoutManager(this)
     }
 
     create() {
-        this.state = createInitialState(8, 8)
-        this.render()
+        this.layout.create()
+
+        this.layout.header.setTitle('MY GAME')
+
+        this.tilesBoard = new TilesBoard(this, 0, 0)
+        this.tilesBoard.create()
+
+        this.layout.content.add(this.tilesBoard)
+        this.layout.content.centerChild(this.tilesBoard)
+
+        this.layout.footer.setText('Ready to play!').setScore(0).setTimer(60)
+
+        this.scale.on('resize', this.onResize, this)
     }
 
-    /**
-     * render
-     * */
+    private onResize(gameSize: Phaser.Structs.Size): void {
+        const { width, height } = gameSize
 
-    render() {
-        for (const row of this.state.grid) {
-            for (const tile of row) {
-                if (!tile) {
-                    continue
-                }
-                let view = this.views.get(tile?.id)
-                if (!view) {
-                    view = this.factory.create(tile, this.tileClickHandler)
-                }
-                // todo обновляются все тайлы!
-                view?.update(tile)
-                this.views.set(tile.id, view)
-            }
+        this.layout.resize()
+
+        if (this.tilesBoard) {
+            this.layout.content.centerChild(this.tilesBoard)
         }
     }
 
-    tileClickHandler(tileId: number) {
-        const tile = this.state.tilesById.get(tileId)
-        this.state = handleTileClick(this.state, tile!.x, tile!.y)
-        /**/
-        this.state.deletedTiles.forEach(id => this.views.get(id)?.destroy())
-        this.state = {
-            ...this.state,
-            deletedTiles: [],
-        }
-        /**/
-        this.state = applyGravity(this.state)
-        this.state = refill(this.state)
-        this.render()
+    update(time: number, delta: number): void {
+        // Пример обновления таймера в футере
+        // this.layout.footer.setTimer(this.state.remainingTime)
     }
-
-    // update(time: number, delta: number) {
-    //
-    // }
 }

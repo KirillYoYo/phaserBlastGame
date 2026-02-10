@@ -8,7 +8,7 @@ import { Preloader } from './scenes/Preloader.js'
 
 enableMapSet()
 
-const config = {
+export const config = {
     type: AUTO,
     width: 1024,
     height: 768,
@@ -20,6 +20,7 @@ const config = {
         autoCenter: Phaser.Scale.CENTER_BOTH,
     },
     scene: [Boot, Preloader, MainGame, GameOver],
+    game: { cols: 8, rows: 8 },
 }
 
 const StartGame = (parent: string | HTMLElement) => {

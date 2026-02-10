@@ -1,3 +1,5 @@
+import { config } from '@/game/main'
+
 import { Tile } from '../entities/Tile'
 
 const COLORS = {
@@ -11,12 +13,28 @@ export class TileView {
     sprite: Phaser.GameObjects.Sprite
     private scene: Phaser.Scene
 
-    private constructor(scene: Phaser.Scene, tile: Tile, clickClb: (tileId: number) => void) {
+    private constructor(
+        scene: Phaser.Scene,
+        tile: Tile,
+        parent: Phaser.GameObjects.Container,
+        clickClb: (tileId: number) => void
+    ) {
         this.scene = scene
-        this.sprite = scene.add.sprite(tile.x * 64, tile.y * 64, 'tile').setInteractive()
+        this.sprite = scene.children.scene.add
+            .sprite(tile.x * 64, -(config.game.rows - -tile.y) * 64, 'tile')
+            .setInteractive()
         this.sprite.setTintFill(COLORS[tile.color])
         this.sprite.setOrigin(0)
         this.sprite.on('pointerdown', () => clickClb(tile.id))
+        parent.add(this.sprite)
+
+        scene.tweens.add({
+            targets: this.sprite,
+            x: tile.x * 64,
+            y: tile.y * 64,
+            duration: 300,
+            ease: 'Back.easeOut', // Пружинистый эффект
+        })
     }
 
     update(tile: Tile) {
@@ -33,7 +51,7 @@ export class TileView {
         this.sprite.destroy()
     }
 
-    static create(scene: Phaser.Scene, tile: Tile, clickClb: (tile: Tile) => void): TileView {
+    static create(scene: Phaser.Scene, tile: Tile, clickClb: (tileId: number) => void): TileView {
         return new TileView(scene, tile, clickClb)
     }
 }
@@ -43,17 +61,22 @@ function hexToTint(hex: string) {
     return Phaser.Display.Color.HexStringToColor(rgb).color
 }
 
-function hexAlpha(hex: string) {
-    if (hex.length === 9) {
-        return parseInt(hex.slice(7, 9), 16) / 255
-    }
-    return 1
-}
+// function hexAlpha(hex: string) {
+//     if (hex.length === 9) {
+//         return parseInt(hex.slice(7, 9), 16) / 255
+//     }
+//     return 1
+// }
 
 export class TileViewFactory {
     constructor(private scene: Phaser.Scene) {}
 
-    create(tile: Tile, clickClb: (tileId: number) => void): TileView {
-        return new TileView(this.scene, tile, clickClb)
+    create(
+        tile: Tile,
+        parent: Phaser.GameObjects.Container,
+        clickClb: (tileId: number) => void
+    ): TileView {
+        // @ts-ignore
+        return new TileView(this.scene, tile, parent, clickClb)
     }
 }
