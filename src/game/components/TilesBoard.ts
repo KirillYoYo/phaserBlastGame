@@ -1,13 +1,9 @@
-import { createInitialState } from '../state/createInitialState'
-import { handleTileClick } from '../systems/ClickSystem'
+import { gameStore } from '@/game/state/store'
+import { GameState } from '@/game/state/state'
+
 import { TileView, TileViewFactory } from '../views/TileView'
-import { applyGravity } from '../systems/GravitySystem'
-import { refill } from '../systems/RefillSystem'
-import { GameState } from '../state/state'
-import { config } from '../main'
 
 export class TilesBoard extends Phaser.GameObjects.Container {
-    tileState!: GameState
     views = new Map<number, TileView>()
     factory: TileViewFactory
 
@@ -16,10 +12,14 @@ export class TilesBoard extends Phaser.GameObjects.Container {
         scene.add.existing(this)
         this.tileClickHandler = this.tileClickHandler.bind(this)
         this.factory = new TileViewFactory(scene)
+
+        gameStore.subscribe(state => {
+            this.sync(state)
+        })
     }
 
     create() {
-        this.tileState = createInitialState(config.game.cols, config.game.rows)
+        // this.tileState = createInitialState(config.game.cols, config.game.rows)
         this.render()
     }
 
@@ -28,7 +28,7 @@ export class TilesBoard extends Phaser.GameObjects.Container {
      * */
 
     render() {
-        for (const row of this.tileState.grid) {
+        for (const row of gameStore.getState().grid) {
             for (const tile of row) {
                 if (!tile) {
                     continue
@@ -45,21 +45,32 @@ export class TilesBoard extends Phaser.GameObjects.Container {
     }
 
     tileClickHandler(tileId: number) {
-        const tile = this.tileState.tilesById.get(tileId)
-        this.tileState = handleTileClick(this.tileState, tile!.x, tile!.y)
-        /**/
-        this.tileState.deletedTiles.forEach(id => this.views.get(id)?.destroy())
-        this.tileState = {
-            ...this.tileState,
-            deletedTiles: [],
-        }
-        /**/
-        this.tileState = applyGravity(this.tileState)
-        this.tileState = refill(this.tileState)
-        this.render()
+        gameStore.dispatch({
+            type: 'TILE_CLICKED',
+            tileId,
+        })
     }
 
     // update(time: number, delta: number) {
     //
     // }
+
+    sync(state: GameState) {
+        for (const id of state.deletedTiles) {
+            this.views.get(id)?.destroy()
+            this.views.delete(id)
+        }
+
+        // 2. update / create views
+        for (const tile of state.tilesById.values()) {
+            let view = this.views.get(tile.id)
+
+            if (!view) {
+                view = this.factory.create(tile, this, this.tileClickHandler)
+                this.views.set(tile.id, view)
+            }
+
+            view.update(tile)
+        }
+    }
 }

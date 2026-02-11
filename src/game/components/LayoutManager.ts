@@ -47,11 +47,6 @@ export class Header extends UIContainer {
         this.title.setText(text)
         return this
     }
-
-    public setTitleStyle(style: Phaser.Types.GameObjects.Text.TextStyle): this {
-        this.title.setStyle(style)
-        return this
-    }
 }
 
 export class Content extends UIContainer {
@@ -62,8 +57,8 @@ export class Content extends UIContainer {
     public centerChild(child: UIContainer, offsetY: number = 0): this {
         if (!child) return this
 
-        const childWidth = (child as any).width || child.getBounds().width
-        const childHeight = (child as any).height || child.getBounds().height
+        const childWidth = child.width || child.getBounds().width
+        const childHeight = child.height || child.getBounds().height
 
         child.setPosition((this.width - childWidth) / 2, (this.height - childHeight) / 2 + offsetY)
         return this
@@ -77,7 +72,9 @@ export class Content extends UIContainer {
     public clear(): this {
         this.removeAll(true)
         // Восстанавливаем фон
-        this.add(this.bg)
+        if (this.bg) {
+            this.add(this.bg)
+        }
         return this
     }
 }

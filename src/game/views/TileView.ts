@@ -1,5 +1,4 @@
-import { config } from '@/game/main'
-
+import { config } from '../state/store'
 import { Tile } from '../entities/Tile'
 
 const COLORS = {
@@ -11,6 +10,7 @@ const COLORS = {
 
 export class TileView {
     sprite: Phaser.GameObjects.Sprite
+    parent: Phaser.GameObjects.Container
     private scene: Phaser.Scene
 
     private constructor(
@@ -26,6 +26,7 @@ export class TileView {
         this.sprite.setTintFill(COLORS[tile.color])
         this.sprite.setOrigin(0)
         this.sprite.on('pointerdown', () => clickClb(tile.id))
+        this.parent = parent
         parent.add(this.sprite)
 
         scene.tweens.add({
@@ -51,8 +52,13 @@ export class TileView {
         this.sprite.destroy()
     }
 
-    static create(scene: Phaser.Scene, tile: Tile, clickClb: (tileId: number) => void): TileView {
-        return new TileView(scene, tile, clickClb)
+    static create(
+        scene: Phaser.Scene,
+        tile: Tile,
+        parent: Phaser.GameObjects.Container,
+        clickClb: (tileId: number) => void
+    ): TileView {
+        return new TileView(scene, tile, parent, clickClb)
     }
 }
 
@@ -60,13 +66,6 @@ function hexToTint(hex: string) {
     const rgb = hex.slice(0, 7)
     return Phaser.Display.Color.HexStringToColor(rgb).color
 }
-
-// function hexAlpha(hex: string) {
-//     if (hex.length === 9) {
-//         return parseInt(hex.slice(7, 9), 16) / 255
-//     }
-//     return 1
-// }
 
 export class TileViewFactory {
     constructor(private scene: Phaser.Scene) {}
@@ -76,7 +75,13 @@ export class TileViewFactory {
         parent: Phaser.GameObjects.Container,
         clickClb: (tileId: number) => void
     ): TileView {
-        // @ts-ignore
-        return new TileView(this.scene, tile, parent, clickClb)
+        return TileView.create(this.scene, tile, parent, clickClb)
     }
 }
+
+// function hexAlpha(hex: string) {
+//     if (hex.length === 9) {
+//         return parseInt(hex.slice(7, 9), 16) / 255
+//     }
+//     return 1
+// }

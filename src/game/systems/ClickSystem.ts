@@ -8,6 +8,7 @@ import { findConnectedTiles } from './MatchSystem'
 
 export function handleTileClick(state: GameState, x: number, y: number) {
     return produce(state, draft => {
+        draft.deletedTiles = []
         const deleteItems = (tile: Tile) => {
             draft.grid[tile.y][tile.x] = null
             draft.tilesById.delete(tile.id)
