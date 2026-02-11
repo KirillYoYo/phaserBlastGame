@@ -43,8 +43,8 @@ export class Header extends UIContainer {
         this.add(this.title)
     }
 
-    public setTitle(text: string): this {
-        this.title.setText(text)
+    public setTitle(text: string | number): this {
+        this.title.setText(`${text}`)
         return this
     }
 }

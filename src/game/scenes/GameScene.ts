@@ -1,22 +1,32 @@
 import { GameState } from '@/game/state/state'
 import { TilesBoard } from '@/game/components/TilesBoard'
 import { LayoutManager } from '@/game/components/LayoutManager'
+import { gameStore } from '@/game/state/store'
 
 export class GameScene extends Phaser.Scene {
     layout: LayoutManager
     tilesBoard: TilesBoard | null
+    scores: number
     state!: GameState
 
     constructor() {
         super('GameScene')
         this.tilesBoard = null
         this.layout = new LayoutManager(this)
+        this.scores = gameStore.getState().score
+
+        gameStore.subscribeSelective(
+            state => state.score,
+            score => {
+                this.sync(score)
+            }
+        )
     }
 
     create() {
         this.layout.create()
 
-        this.layout.header.setTitle('MY GAME')
+        this.layout.header.setTitle(this.scores)
 
         this.tilesBoard = new TilesBoard(this, 0, 0)
         this.tilesBoard.create()
@@ -42,5 +52,10 @@ export class GameScene extends Phaser.Scene {
     update(time: number, delta: number): void {
         // Пример обновления таймера в футере
         // this.layout.footer.setTimer(this.state.remainingTime)
+    }
+
+    sync(score: number) {
+        this.scores = score
+        this.layout.header.setTitle(this.scores)
     }
 }

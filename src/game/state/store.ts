@@ -52,6 +52,22 @@ class GameStore {
         return () => this.listeners.delete(fn)
     }
 
+    subscribeSelective<T>(selector: (state: GameState) => T, listener: (slice: T) => void) {
+        let prevSlice = selector(this.state)
+
+        const wrapped = (state: GameState) => {
+            const nextSlice = selector(state)
+
+            if (nextSlice !== prevSlice) {
+                prevSlice = nextSlice
+                listener(nextSlice)
+            }
+        }
+
+        this.listeners.add(wrapped)
+        return () => this.listeners.delete(wrapped)
+    }
+
     private emit() {
         this.listeners.forEach(fn => fn(this.state))
     }
