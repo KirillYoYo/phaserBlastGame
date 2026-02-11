@@ -22,6 +22,6 @@ export function handleTileClick(state: GameState, x: number, y: number) {
         for (const tile of group) {
             deleteItems(tile)
         }
-        draft.score += group.length * 10
+        draft.scores += group.length * 10
     })
 }

@@ -13,14 +13,20 @@ export class GameScene extends Phaser.Scene {
         super('GameScene')
         this.tilesBoard = null
         this.layout = new LayoutManager(this)
-        this.scores = gameStore.getState().score
+        this.scores = gameStore.getState().scores
 
         gameStore.subscribeSelective(
-            state => state.score,
+            state => state.scores,
             score => {
                 this.sync(score)
             }
         )
+    }
+
+    preload() {
+        this.load.image('headerFrame', 'src/assets/bg_frame_moves.png')
+        this.load.image('moves', 'src/assets/bg_moves.png')
+        this.load.image('scores', 'src/assets/slot_frame_moves.png')
     }
 
     create() {
@@ -49,10 +55,10 @@ export class GameScene extends Phaser.Scene {
         }
     }
 
-    update(time: number, delta: number): void {
-        // Пример обновления таймера в футере
-        // this.layout.footer.setTimer(this.state.remainingTime)
-    }
+    // update(time: number, delta: number): void {
+    //     // Пример обновления таймера в футере
+    //     // this.layout.footer.setTimer(this.state.remainingTime)
+    // }
 
     sync(score: number) {
         this.scores = score

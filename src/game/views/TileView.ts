@@ -20,7 +20,7 @@ export class TileView {
         clickClb: (tileId: number) => void
     ) {
         this.scene = scene
-        this.sprite = scene.children.scene.add
+        this.sprite = scene.add
             .sprite(tile.x * 64, -(config.game.rows - -tile.y) * 64, 'tile')
             .setInteractive()
         this.sprite.setTintFill(COLORS[tile.color])

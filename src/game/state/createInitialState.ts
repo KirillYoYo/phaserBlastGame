@@ -24,9 +24,11 @@ export function createInitialState(cols: number, rows: number): GameState {
 
     return {
         grid,
-        score: 0,
+        scores: 0,
+        scoresToWin: 1000,
         nextTileId: id,
         tilesById: tilesById,
         deletedTiles: [],
+        moves: 0,
     }
 }
