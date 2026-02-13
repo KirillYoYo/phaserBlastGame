@@ -1,8 +1,9 @@
 import { config } from '../state/store'
 import { Tile } from '../entities/Tile'
 
-const COLORS = {
+export const COLORS_INT = {
     red: hexToTint('#c60f0f'),
+    purple: hexToTint('#c600ff'),
     green: hexToTint('#1a9c14'),
     blue: hexToTint('#142b9c'),
     yellow: hexToTint('#bac60fff'),
@@ -12,6 +13,7 @@ export class TileView {
     sprite: Phaser.GameObjects.Sprite
     parent: Phaser.GameObjects.Container
     private scene: Phaser.Scene
+    id: string
 
     private constructor(
         scene: Phaser.Scene,
@@ -21,11 +23,16 @@ export class TileView {
     ) {
         this.scene = scene
         this.sprite = scene.add
-            .sprite(tile.x * 64, -(config.game.rows - -tile.y) * 64, 'tile')
+            .sprite(tile.x * 64, -(config.game.rows - -tile.y) * 64, `b_${tile.color}`)
             .setInteractive()
-        this.sprite.setTintFill(COLORS[tile.color])
+
         this.sprite.setOrigin(0)
-        this.sprite.on('pointerdown', () => clickClb(tile.id))
+        this.sprite.on('pointerdown', () => {
+            clickClb(tile.id)
+        })
+        this.sprite.setDisplaySize(62, 62)
+        this.sprite.setName(`${tile.id}`)
+        this.id = `${tile.id}`
         this.parent = parent
         parent.add(this.sprite)
 

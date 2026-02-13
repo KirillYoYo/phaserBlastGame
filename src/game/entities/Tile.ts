@@ -1,4 +1,4 @@
-export type TileColor = 'red' | 'green' | 'blue' | 'yellow'
+export type TileColor = 'red' | 'green' | 'blue' | 'yellow' | 'purpure'
 
 export interface Tile {
     id: number

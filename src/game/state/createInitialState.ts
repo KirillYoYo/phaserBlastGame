@@ -2,7 +2,7 @@ import { Tile, TileColor } from '../entities/Tile'
 
 import { GameState } from './state'
 
-const COLORS: TileColor[] = ['red', 'green', 'blue', 'yellow']
+const COLORS: TileColor[] = ['red', 'green', 'blue', 'yellow', 'purpure']
 
 export function createInitialState(cols: number, rows: number): GameState {
     let id = 0

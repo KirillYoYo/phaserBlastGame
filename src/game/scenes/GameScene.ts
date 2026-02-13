@@ -18,27 +18,25 @@ export class GameScene extends Phaser.Scene {
         gameStore.subscribeSelective(
             state => state.scores,
             score => {
-                this.sync(score)
+                // console.log('score', score)
             }
         )
-    }
-
-    preload() {
-        this.load.image('headerFrame', 'src/assets/bg_frame_moves.png')
-        this.load.image('moves', 'src/assets/bg_moves.png')
-        this.load.image('scores', 'src/assets/slot_frame_moves.png')
     }
 
     create() {
         this.layout.create()
 
         this.layout.header.setTitle(this.scores)
-
-        this.tilesBoard = new TilesBoard(this, 0, 0)
+        this.tilesBoard = new TilesBoard(this, this.layout.content.x, this.layout.header.height)
         this.tilesBoard.create()
 
         this.layout.content.add(this.tilesBoard)
         this.layout.content.centerChild(this.tilesBoard)
+        this.tilesBoard.fx.red.x = this.tilesBoard.x
+        this.tilesBoard.fx.blue.x = this.tilesBoard.x
+        this.tilesBoard.fx.green.x = this.tilesBoard.x
+        this.tilesBoard.fx.yellow.x = this.tilesBoard.x
+        this.tilesBoard.fx.purpure.x = this.tilesBoard.x
 
         this.layout.footer.setText('Ready to play!').setScore(0).setTimer(60)
 
@@ -60,8 +58,15 @@ export class GameScene extends Phaser.Scene {
     //     // this.layout.footer.setTimer(this.state.remainingTime)
     // }
 
-    sync(score: number) {
-        this.scores = score
-        this.layout.header.setTitle(this.scores)
+    preload() {
+        this.load.image('headerFrame', 'src/assets/bg_frame_moves.png')
+        this.load.image('moves', 'src/assets/bg_moves.png')
+        this.load.image('scores', 'src/assets/slot_frame_moves.png')
+        /**/
+        this.load.image('b_blue', 'src/assets/block_blue.png')
+        this.load.image('b_green', 'src/assets/block_green.png')
+        this.load.image('b_purpure', 'src/assets/block_purpure.png')
+        this.load.image('b_red', 'src/assets/block_red.png')
+        this.load.image('b_yellow', 'src/assets/block_yellow.png')
     }
 }
