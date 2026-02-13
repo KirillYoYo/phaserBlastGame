@@ -106,6 +106,7 @@ export default tseslint.config(
             // Функционалка
             eqeqeq: ['error', 'always', { null: 'ignore' }], // == null OK
             curly: ['error', 'multi-line'], // if без {} только 1 строка
+            'eol-last': ['error', 'never'],
         },
     },
     {
