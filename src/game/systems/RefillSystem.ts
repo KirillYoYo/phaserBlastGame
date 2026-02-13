@@ -3,7 +3,7 @@ import { produce } from 'immer'
 import { GameState } from '../state/state'
 import { Tile, TileColor } from '../entities/Tile'
 
-const COLORS: TileColor[] = ['red', 'green', 'blue', 'yellow']
+const COLORS: TileColor[] = ['red', 'green', 'blue', 'yellow', 'purpure']
 
 export function refill(state: GameState): GameState {
     return produce(state, draft => {

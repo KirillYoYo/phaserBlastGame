@@ -27,7 +27,11 @@ export class GameScene extends Phaser.Scene {
         this.layout.create()
 
         this.layout.header.setTitle(this.scores)
-        this.tilesBoard = new TilesBoard(this, this.layout.content.x, this.layout.header.height)
+        this.tilesBoard = new TilesBoard(
+            this,
+            this.layout.content.x,
+            this.layout.header.getBounds().height
+        )
         this.tilesBoard.create()
 
         this.layout.content.add(this.tilesBoard)

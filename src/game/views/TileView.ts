@@ -2,11 +2,11 @@ import { config } from '../state/store'
 import { Tile } from '../entities/Tile'
 
 export const COLORS_INT = {
-    red: hexToTint('#c60f0f'),
-    purple: hexToTint('#c600ff'),
-    green: hexToTint('#1a9c14'),
-    blue: hexToTint('#142b9c'),
-    yellow: hexToTint('#bac60fff'),
+    red: hexToTint('#CB1B2E'),
+    purpure: hexToTint('#C04D9B'),
+    green: hexToTint('#44C125'),
+    blue: hexToTint('#00A4EF'),
+    yellow: hexToTint('#F19E00'),
 } as const
 
 export class TileView {
