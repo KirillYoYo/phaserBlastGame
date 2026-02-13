@@ -27,7 +27,7 @@ export type Action = { type: 'TILE_CLICKED'; tileId: number }
 
 class GameStore {
     private state: GameState
-    private listeners = new Set<(state: GameState) => void>()
+    private listeners = new Set<(state: GameState, prevState: GameState) => void>()
 
     constructor() {
         this.state = createInitialState(config.game.cols, config.game.rows)
@@ -39,7 +39,7 @@ class GameStore {
 
         if (next !== prev) {
             this.state = next
-            this.emit()
+            this.emit(next, prev)
         }
     }
 
@@ -47,7 +47,7 @@ class GameStore {
         return this.state
     }
 
-    subscribe(fn: (state: GameState) => void) {
+    subscribe(fn: (state: GameState, prevState: GameState) => void) {
         this.listeners.add(fn)
         return () => this.listeners.delete(fn)
     }
@@ -68,8 +68,10 @@ class GameStore {
         return () => this.listeners.delete(wrapped)
     }
 
-    private emit() {
-        this.listeners.forEach(fn => fn(this.state))
+    private emit(next: GameState, prev: GameState) {
+        for (const fn of this.listeners) {
+            fn(next, prev)
+        }
     }
 }
 
