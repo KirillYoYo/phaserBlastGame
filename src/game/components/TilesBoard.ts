@@ -42,7 +42,7 @@ export class TilesBoard extends Phaser.GameObjects.Container {
                     this.views.set(tile.id, view)
                 }
                 // todo обновляются все тайлы!
-                view?.update(tile)
+                view?.update(tile, this.store.boosters.teleportFirst)
             }
         }
     }
@@ -60,6 +60,7 @@ export class TilesBoard extends Phaser.GameObjects.Container {
     // }
 
     sync(state: GameState, prevState: GameState) {
+        this.store = state
         if (state.deletedTiles.length) {
             this.playTileFx(
                 state.deletedTiles.map(id => prevState.tilesById.get(id)) as Tile[],
@@ -84,11 +85,16 @@ export class TilesBoard extends Phaser.GameObjects.Container {
             let view = this.views.get(tile.id)
 
             if (!view) {
-                view = this.factory.create(tile, this, this.tileClickHandler)
+                view = this.factory.create(
+                    tile,
+                    this,
+                    this.tileClickHandler,
+                    this.store.boosters.teleportFirst
+                )
                 this.views.set(tile.id, view)
             }
 
-            view.update(tile)
+            view.update(tile, this.store.boosters.teleportFirst)
         }
     }
 
@@ -133,7 +139,6 @@ export class TilesBoard extends Phaser.GameObjects.Container {
         }
         const intensity = exponentialGrowth(tiles.length, 10)
         const radius = 2 + intensity * 0.55
-        console.log('intensity', intensity)
 
         // ---- СОЗДАНИЕ N ЧАСТИЦ ----
         for (let i = 0; i < intensity * 2; i++) {

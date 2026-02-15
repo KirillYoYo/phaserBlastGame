@@ -1,6 +1,6 @@
 import { AUTO } from 'phaser'
 
-import { GameState } from '@/game/state/state'
+import { BoosterNames, GameState } from '@/game/state/state'
 import { reduce } from '@/game/state/reducers'
 import { createInitialState } from '@/game/state/createInitialState'
 import { Boot } from '@/game/scenes/Boot'
@@ -23,7 +23,15 @@ export const config = {
     game: { cols: 8, rows: 8 },
 }
 
-export type Action = { type: 'TILE_CLICKED'; tileId: number }
+export type Action =
+    | {
+          type: 'TILE_CLICKED'
+          tileId: number
+      }
+    | {
+          type: 'BOOSTER_CLICKED'
+          booster: BoosterNames
+      }
 
 class GameStore {
     private state: GameState
@@ -49,6 +57,10 @@ class GameStore {
 
     subscribe(fn: (state: GameState, prevState: GameState) => void) {
         this.listeners.add(fn)
+        // todo вызывать при создании стора (как в Redux)
+        // if (immediate) {
+        //     fn(this.state, this.state)
+        // }
         return () => this.listeners.delete(fn)
     }
 

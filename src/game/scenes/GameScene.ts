@@ -42,8 +42,6 @@ export class GameScene extends Phaser.Scene {
         this.tilesBoard.fx.yellow.x = this.tilesBoard.x
         this.tilesBoard.fx.purpure.x = this.tilesBoard.x
 
-        this.layout.footer.setText('Ready to play!').setScore(0).setTimer(60)
-
         this.scale.on('resize', this.onResize, this)
     }
 
@@ -72,5 +70,8 @@ export class GameScene extends Phaser.Scene {
         this.load.image('b_purpure', 'src/assets/block_purpure.png')
         this.load.image('b_red', 'src/assets/block_red.png')
         this.load.image('b_yellow', 'src/assets/block_yellow.png')
+        this.load.image('bg_booster', 'src/assets/bg_booster.png')
+        this.load.image('booster_bomb', 'src/assets/icon_booster_bomb.png')
+        this.load.image('booster_teleport', 'src/assets/icon_booster_teleport.png')
     }
 }

@@ -14,12 +14,14 @@ export class TileView {
     parent: Phaser.GameObjects.Container
     private scene: Phaser.Scene
     id: string
+    activeTile?: Tile
 
     private constructor(
         scene: Phaser.Scene,
         tile: Tile,
         parent: Phaser.GameObjects.Container,
-        clickClb: (tileId: number) => void
+        clickClb: (tileId: number) => void,
+        activeTile?: Tile
     ) {
         this.scene = scene
         this.sprite = scene.add
@@ -32,9 +34,14 @@ export class TileView {
         })
         this.sprite.setDisplaySize(62, 62)
         this.sprite.setName(`${tile.id}`)
+        this.activeTile = activeTile
         this.id = `${tile.id}`
         this.parent = parent
         parent.add(this.sprite)
+
+        if (tile.id === activeTile?.id) {
+            this.sprite.setTint(0xcccccc)
+        }
 
         scene.tweens.add({
             targets: this.sprite,
@@ -45,7 +52,7 @@ export class TileView {
         })
     }
 
-    update(tile: Tile) {
+    update(tile: Tile, activeTile?: Tile) {
         this.scene.tweens.add({
             targets: this.sprite,
             x: tile.x * 64,
@@ -53,6 +60,11 @@ export class TileView {
             duration: 300, // 0.3 секунды
             ease: 'Power2',
         })
+        if (tile.id === activeTile?.id) {
+            this.sprite.setTint(0xcccccc)
+        } else {
+            this.sprite.clearTint()
+        }
     }
 
     destroy() {
@@ -63,9 +75,10 @@ export class TileView {
         scene: Phaser.Scene,
         tile: Tile,
         parent: Phaser.GameObjects.Container,
-        clickClb: (tileId: number) => void
+        clickClb: (tileId: number) => void,
+        activeTile?: Tile
     ): TileView {
-        return new TileView(scene, tile, parent, clickClb)
+        return new TileView(scene, tile, parent, clickClb, activeTile)
     }
 }
 
@@ -80,9 +93,10 @@ export class TileViewFactory {
     create(
         tile: Tile,
         parent: Phaser.GameObjects.Container,
-        clickClb: (tileId: number) => void
+        clickClb: (tileId: number) => void,
+        activeTile?: Tile
     ): TileView {
-        return TileView.create(this.scene, tile, parent, clickClb)
+        return TileView.create(this.scene, tile, parent, clickClb, activeTile)
     }
 }
 

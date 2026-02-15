@@ -30,5 +30,12 @@ export function createInitialState(cols: number, rows: number): GameState {
         tilesById: tilesById,
         deletedTiles: [],
         moves: 0,
+        currentBooster: undefined,
+        boosters: {
+            bomb: 5,
+            teleport: 5,
+            teleportFirst: null,
+            teleportSecond: null,
+        },
     }
 }
