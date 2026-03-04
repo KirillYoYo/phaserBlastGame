@@ -1,7 +1,8 @@
-import { gameStore } from '@/game/state/store'
 import { GameState } from '@/game/state/state'
 import { exponentialGrowth } from '@/game/helpers/animations'
 import { Tile, TileColor } from '@/game/entities/Tile'
+import { store } from '@/game/state/store'
+import { tileClicked } from '@/game/state/gameSlice'
 
 import { COLORS_INT, TileView, TileViewFactory } from '../views/TileView'
 
@@ -11,16 +12,22 @@ export class TilesBoard extends Phaser.GameObjects.Container {
     store: GameState
     fx: Record<string, Phaser.GameObjects.Particles.ParticleEmitter>
     private _clickedTile: number
+    private prevState: GameState
 
     constructor(scene: Phaser.Scene, x: number = 0, y: number = 0) {
         super(scene, x, y)
         scene.add.existing(this)
         this.tileClickHandler = this.tileClickHandler.bind(this)
         this.factory = new TileViewFactory(scene)
-        this.store = gameStore.getState()
+        this.store = store.getState().game
+        this.prevState = store.getState().game
+        store.subscribe(() => {
+            const currentState = store.getState().game
+            if (currentState !== this.prevState) {
+                this.sync(currentState)
 
-        gameStore.subscribe((state, prevState) => {
-            this.sync(state, prevState)
+                this.prevState = currentState
+            }
         })
 
         this.createFx(0, y)
@@ -31,7 +38,7 @@ export class TilesBoard extends Phaser.GameObjects.Container {
     }
 
     render() {
-        for (const row of gameStore.getState().grid) {
+        for (const row of store.getState().game.grid) {
             for (const tile of row) {
                 if (!tile) {
                     continue
@@ -49,23 +56,14 @@ export class TilesBoard extends Phaser.GameObjects.Container {
 
     tileClickHandler(tileId: number) {
         this._clickedTile = tileId
-        gameStore.dispatch({
-            type: 'TILE_CLICKED',
-            tileId,
-        })
+        store.dispatch(tileClicked(tileId))
     }
 
-    // update(time: number, delta: number) {
-    //
-    // }
-
-    sync(state: GameState, prevState: GameState) {
+    sync(state: GameState) {
         this.store = state
         if (state.deletedTiles.length) {
             this.playTileFx(
-                state.deletedTiles.map(id => prevState.tilesById.get(id)) as Tile[],
-                this.width / 2,
-                this.height / 2
+                state.deletedTiles.map(id => this.prevState.tilesById.get(id)) as Tile[]
             )
         }
         for (const id of state.deletedTiles) {
@@ -73,7 +71,7 @@ export class TilesBoard extends Phaser.GameObjects.Container {
             const shake = Math.min(1500, 100 * (count / 7))
             const power = Math.min(0.02, 0.0005 * count)
             this.scene.cameras.main.shake(shake, power, true)
-            const item = prevState.tilesById.get(id)
+            const item = this.prevState.tilesById.get(id)
             if (item) {
                 const em = this.fx[item.color]
                 em.explode(count * 2, item.x * 64, item.y * 64)
@@ -131,7 +129,7 @@ export class TilesBoard extends Phaser.GameObjects.Container {
         }
     }
 
-    playTileFx(tiles: Tile[], startX: number, startY: number) {
+    playTileFx(tiles: Tile[]) {
         const circles: Phaser.GameObjects.Image[] = []
         const tile = tiles.find(tile => tile.id === this._clickedTile)
         if (!tile) {

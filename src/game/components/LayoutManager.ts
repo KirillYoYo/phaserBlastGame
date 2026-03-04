@@ -1,11 +1,12 @@
 import Phaser from 'phaser'
 
-import { gameStore } from '@/game/state/store'
+import { store } from '@/game/state/store'
 import { GameState } from '@/game/state/state'
 import { Header } from '@/game/components/header'
 import { Content } from '@/game/components/content'
 import { Footer } from '@/game/components/footer'
 import { UIButton } from '@/game/components/uiButton'
+import { boosterClicked } from '@/game/state/gameSlice'
 
 export class LayoutManager {
     public header: Header
@@ -18,6 +19,8 @@ export class LayoutManager {
     private bombButton: UIButton
     private teleportButton: UIButton
 
+    store: GameState
+
     constructor(scene: Phaser.Scene) {
         this.scene = scene
 
@@ -27,8 +30,9 @@ export class LayoutManager {
             scoresToWin: 0,
         }
 
-        gameStore.subscribe(state => {
-            this.sync(state)
+        store.subscribe(() => {
+            const state = store.getState()
+            this.sync(state.game)
         })
     }
 
@@ -70,7 +74,7 @@ export class LayoutManager {
 
         this._createFooter()
 
-        this.sync(gameStore.getState())
+        this.store = store.getState().game
         return this
     }
 
@@ -156,7 +160,7 @@ export class LayoutManager {
             iconKey: 'booster_bomb',
             text: 'PLAY',
             height: this.footer.height,
-            onClick: () => gameStore.dispatch({ type: 'BOOSTER_CLICKED', booster: 'bomb' }),
+            onClick: () => store.dispatch(boosterClicked('bomb')),
         })
         this.footer.add(this.bombButton)
         this.bombButton.setX(this.bombButton.width / 2)
@@ -168,7 +172,7 @@ export class LayoutManager {
             iconKey: 'booster_teleport',
             text: 'PLAY',
             height: this.footer.height,
-            onClick: () => gameStore.dispatch({ type: 'BOOSTER_CLICKED', booster: 'teleport' }),
+            onClick: () => store.dispatch(boosterClicked('teleport')),
         })
         this.footer.add(this.teleportButton)
         this.teleportButton.setX(this.bombButton.width / 2 + this.teleportButton.width)

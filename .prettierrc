@@ -8,5 +8,6 @@
   "bracketSpacing": true,
   "arrowParens": "avoid",
   "quoteProps": "as-needed",
-  "insertFinalNewline": false
+  "insertFinalNewline": true,
+  "endOfLine": "lf"
 }

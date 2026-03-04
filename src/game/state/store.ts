@@ -1,12 +1,30 @@
 import { AUTO } from 'phaser'
+import { configureStore } from '@reduxjs/toolkit'
 
-import { BoosterNames, GameState } from '@/game/state/state'
-import { reduce } from '@/game/state/reducers'
-import { createInitialState } from '@/game/state/createInitialState'
 import { Boot } from '@/game/scenes/Boot'
 import { Preloader } from '@/game/scenes/Preloader'
 import { GameScene as MainGame } from '@/game/scenes/GameScene'
 import { GameOver } from '@/game/scenes/GameOver'
+
+import gameReducer from './gameSlice'
+
+export const store = configureStore({
+    reducer: {
+        game: gameReducer,
+    },
+    // Добавляем middleware для логирования в разработке
+    middleware: getDefaultMiddleware =>
+        getDefaultMiddleware({
+            // Разрешаем Map в состоянии
+            serializableCheck: {
+                ignoredPaths: ['game.tilesById', 'game.grid'],
+                ignoredActions: ['game/tileClicked', 'game/boosterClicked'],
+            },
+        }),
+})
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
 
 export const config = {
     type: AUTO,
@@ -22,69 +40,3 @@ export const config = {
     scene: [Boot, Preloader, MainGame, GameOver],
     game: { cols: 8, rows: 8 },
 }
-
-export type Action =
-    | {
-          type: 'TILE_CLICKED'
-          tileId: number
-      }
-    | {
-          type: 'BOOSTER_CLICKED'
-          booster: BoosterNames
-      }
-
-class GameStore {
-    private state: GameState
-    private listeners = new Set<(state: GameState, prevState: GameState) => void>()
-
-    constructor() {
-        this.state = createInitialState(config.game.cols, config.game.rows)
-    }
-
-    dispatch(action: Action) {
-        const prev = this.state
-        const next = reduce(prev, action)
-
-        if (next !== prev) {
-            this.state = next
-            this.emit(next, prev)
-        }
-    }
-
-    getState() {
-        return this.state
-    }
-
-    subscribe(fn: (state: GameState, prevState: GameState) => void) {
-        this.listeners.add(fn)
-        // todo вызывать при создании стора (как в Redux)
-        // if (immediate) {
-        //     fn(this.state, this.state)
-        // }
-        return () => this.listeners.delete(fn)
-    }
-
-    subscribeSelective<T>(selector: (state: GameState) => T, listener: (slice: T) => void) {
-        let prevSlice = selector(this.state)
-
-        const wrapped = (state: GameState) => {
-            const nextSlice = selector(state)
-
-            if (nextSlice !== prevSlice) {
-                prevSlice = nextSlice
-                listener(nextSlice)
-            }
-        }
-
-        this.listeners.add(wrapped)
-        return () => this.listeners.delete(wrapped)
-    }
-
-    private emit(next: GameState, prev: GameState) {
-        for (const fn of this.listeners) {
-            fn(next, prev)
-        }
-    }
-}
-
-export const gameStore = new GameStore()

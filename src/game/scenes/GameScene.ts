@@ -1,7 +1,7 @@
 import { GameState } from '@/game/state/state'
 import { TilesBoard } from '@/game/components/TilesBoard'
 import { LayoutManager } from '@/game/components/LayoutManager'
-import { gameStore } from '@/game/state/store'
+import { store } from '@/game/state/store'
 
 export class GameScene extends Phaser.Scene {
     layout: LayoutManager
@@ -13,14 +13,7 @@ export class GameScene extends Phaser.Scene {
         super('GameScene')
         this.tilesBoard = null
         this.layout = new LayoutManager(this)
-        this.scores = gameStore.getState().scores
-
-        gameStore.subscribeSelective(
-            state => state.scores,
-            score => {
-                // console.log('score', score)
-            }
-        )
+        this.scores = store.getState().game.scores
     }
 
     create() {
